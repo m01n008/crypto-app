@@ -17,7 +17,7 @@ import { Coin, RootStackParamList } from '../types';
 
 const StarIcon = require('../assets/images/Star.png');
 const RocketIcon = require('../assets/images/Rocket.png');
-const TriangularFlagIcon = require('../assets/images/Triangular Flag.png');
+const TriangularFlagIcon = require('../assets/images/TriangularFlag.png');
 
 
 const screenWidth = Dimensions.get('window').width;

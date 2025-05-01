@@ -7,15 +7,15 @@ This guide will help you set up and test the app, even if you're not very techni
 
 iOS:
 ![Market](image.png) 
-![Market Overview](assets/screenshots/ios_market.PNG)
-![Coin Details using Candlesticks](assets/screenshots/ios_candle.PNG)
-![CoinDetails using Line Chart](assets/screenshots/ios_line.PNG)
+![Market Overview](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/ios_market.PNG)
+![Coin Details using Candlesticks](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/ios_candle.PNG)
+![CoinDetails using Line Chart](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/ios_line.PNG)
      
 
 Android:
-![Biometric Authentication](assets/screenshots/android_biometric.jpg)
-![Market Overview](assets/screenshots/android_market.jpg)
-![CoinDetails using CandleSticks](assets/screenshots/android_candle.jpg)
+![Biometric Authentication](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/android_biometric.jpg)
+![Market Overview](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/android_market.jpg)
+![CoinDetails using CandleSticks](https://github.com/m01n008/crypto-app/blob/main/assets/screenshots/android_candle.jpg)
 
 ## What the App Does
 - **Charts**: View prices as a Line chart (a simple line) or Candlestick chart (bars showing price changes).
