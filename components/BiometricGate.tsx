@@ -7,6 +7,7 @@ import {
   Platform,
   Linking,
   useColorScheme,
+  StyleSheet,
 } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -69,43 +70,27 @@ const BiometricGate: React.FC<BiometricGateProps> = ({ onAuthenticated }) => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
-
-if (!isBiometricEnrolled) {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: isDarkMode ? '#000' : '#fff', // auto adjust
-      }}
-    >
-      <Text
-        style={{
-          marginBottom: 16,
-          fontSize: 16,
-          textAlign: 'center',
-          color: isDarkMode ? '#fff' : '#000', // auto adjust
-        }}
-      >
-        Biometrics are not set up. Please enable Face ID or fingerprint in device settings.
-      </Text>
-      <Button title="Open Settings" onPress={() => Linking.openSettings()} />
-    </View>
-  );
-}
+  if (!isBiometricEnrolled) {
+    return (
+      <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
+        <Text style={[styles.infoText, { color: isDarkMode ? '#fff' : '#000' }]}>
+          Biometrics are not set up. Please enable Face ID or fingerprint in device settings.
+        </Text>
+        <Button title="Open Settings" onPress={() => Linking.openSettings()} />
+      </View>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Authentication Required</Text>
+      <View style={styles.centered}>
+        <Text style={{ marginBottom: 16 }}>Authentication Required</Text>
         <Button title="Try Again" onPress={checkBiometricAuth} />
       </View>
     );
@@ -113,5 +98,24 @@ if (!isBiometricEnrolled) {
 
   return null;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoText: {
+    marginBottom: 16,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});
 
 export default BiometricGate;
