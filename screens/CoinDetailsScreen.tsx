@@ -52,9 +52,7 @@ const CoinDetailsScreen: React.FC = () => {
           `https://coingeko.burjx.com/coin-ohlc?productId=${selectedCoin?.productId}&days=${timeFrame}`
         );
 
-        console.log('API response:', ohlcResponse.data);
 
-        // Validate response data
         if (!ohlcResponse.data || !Array.isArray(ohlcResponse.data)) {
           console.error('Invalid API response:', ohlcResponse.data);
           setOhlcData((prev) => prev); // Preserve previous data

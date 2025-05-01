@@ -5,6 +5,18 @@ Welcome to the Crypto Chart App! This is a mobile app for viewing cryptocurrency
 
 This guide will help you set up and test the app, even if you're not very technical. Follow the steps carefully, and you’ll have the app running in no time!
 
+iOS:
+![Market](image.png) 
+![Market Overview](assets/screenshots/ios_market.PNG)
+![Coin Details using Candlesticks](assets/screenshots/ios_candle.PNG)
+![CoinDetails using Line Chart](assets/screenshots/ios_line.PNG)
+     
+
+Android:
+![Biometric Authentication](assets/screenshots/android_biometric.jpg)
+![Market Overview](assets/screenshots/android_market.jpg)
+![CoinDetails using CandleSticks](assets/screenshots/android_candle.jpg)
+
 ## What the App Does
 - **Charts**: View prices as a Line chart (a simple line) or Candlestick chart (bars showing price changes).
 - **Toggle Button**: Switch between Line and Candlestick charts with one button (starts with Line).
