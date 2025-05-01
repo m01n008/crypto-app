@@ -56,7 +56,7 @@ You need a few free tools to run the app. Don’t worry, we’ll guide you!
 You can download the app files in two ways. Choose the easier one for you:
 
 #### Option 1: Download as a ZIP File (Easiest)
-- Go to [https://github.com/your-username/my-crypto-app](https://github.com/your-username/my-crypto-app).
+- Go to [https://github.com/m01n008/crypto-app](https://github.com/m01n008/crypto-app).
 - Click the green **Code** button and select **Download ZIP**.
 - Unzip the file to a folder on your computer (e.g., `Desktop/my-crypto-app`).
 - Open Command Prompt/Terminal and navigate to the folder:
