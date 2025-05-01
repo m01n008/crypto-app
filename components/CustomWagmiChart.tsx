@@ -1,4 +1,5 @@
-import React from 'react';
+// CustomWagmiChart.tsx
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
 import { LineChart, CandlestickChart } from 'react-native-wagmi-charts';
 import { OHLCData } from '../types';
@@ -29,11 +30,14 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
   const labelCount = Math.min(labels.length, 6);
   const labelInterval = Math.ceil(labels.length / labelCount);
 
-  // Y-axis labels (optional)
-  const yLabelCount = yValues ? 5 : 0;
-  const maxValue = yValues ? Math.max(...yValues) : 0;
-  const minValue = yValues ? Math.min(...yValues) : 0;
-  const yStep = yValues ? (maxValue - minValue) / (yLabelCount - 1) : 0;
+  // Memoize y-axis calculations
+  const { yLabelCount, maxValue, minValue, yStep } = useMemo(() => {
+    const count = yValues && yValues.length > 0 ? 5 : 0;
+    const max = yValues && yValues.length > 0 ? Math.max(...yValues) : 0;
+    const min = yValues && yValues.length > 0 ? Math.min(...yValues) : 0;
+    const step = count > 0 && max !== min ? (max - min) / (count - 1) : 0;
+    return { yLabelCount: count, maxValue: max, minValue: min, yStep: step };
+  }, [yValues]);
 
   // Line chart data format
   const lineData = data.map((d) => ({
@@ -55,11 +59,14 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
     return `${symbol}${value.toFixed(2)}`;
   };
 
+  // Use consistent chart height
+  const chartHeight = Platform.OS === 'ios' ? height : height - 20;
+
   return (
-    <View style={[styles.chartWrapper, { marginRight: 20 }]}>
+    <View style={[styles.chartWrapper, { marginRight: 40, marginLeft: 20 }]}>
       {chartType === 'line' ? (
         <LineChart.Provider data={lineData}>
-          <LineChart width={width - 80} height={Platform.OS === 'ios' ? height : height - 90}>
+          <LineChart width={width - 120} height={chartHeight}>
             <LineChart.Path color="#007AFF" />
             <LineChart.PriceText
               style={yValues ? { fontSize: 10 } : styles.priceText}
@@ -79,7 +86,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
         </LineChart.Provider>
       ) : (
         <CandlestickChart.Provider data={candleData}>
-          <CandlestickChart width={width - 80} height={Platform.OS === 'ios' ? height : height - 90}>
+          <CandlestickChart width={width - 120} height={chartHeight}>
             <CandlestickChart.Candles />
             <CandlestickChart.Crosshair />
             <CandlestickChart.PriceText
@@ -108,7 +115,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
               style={[
                 styles.label,
                 {
-                  left: (index / (labels.length - 1)) * (width - 40) + 20,
+                  left: (index / (labels.length - 1)) * (width - 120) + 20,
                   transform: [{ rotate: labelRotation }],
                 },
               ]}
@@ -118,8 +125,8 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
           );
         })}
       </View>
-      {yValues && (
-        <View style={styles.yLabelContainer}>
+      {yLabelCount > 0 && (
+        <View style={[styles.yLabelContainer, { height: chartHeight }]}>
           {Array.from({ length: yLabelCount }).map((_, index) => {
             const value = minValue + index * yStep;
             return (
@@ -128,8 +135,8 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
                 style={[
                   styles.yLabel,
                   {
-                    bottom: (index / (yLabelCount - 1)) * (height - 80) + 20,
-                    transform: [{ rotate: labelRotation }],
+                    bottom: (index / (yLabelCount - 1)) * (chartHeight - 80) + 20,
+                   // transform: [{ rotate: labelRotation }],
                   },
                 ]}
               >
@@ -149,9 +156,8 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     position: 'absolute',
-    bottom: -10,
+    bottom: 20,
     width: '100%',
-    right: -100, // Adjusted to move x-axis labels further right
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -173,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#666',
     width: 60,
-    textAlign: 'left', // Left-aligned for right-side labels
+    textAlign: 'left',
     transformOrigin: 'left center',
   },
   priceText: {

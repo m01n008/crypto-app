@@ -58,7 +58,7 @@ const MarketOverviewScreen: React.FC = () => {
 
   useEffect(() => {
     fetchCoins(true);
-    const interval = setInterval(() => fetchCoins(true), 5000); // Update every 5s
+    const interval = setInterval(() => fetchCoins(true), 30000); // Update every 5s
     return () => clearInterval(interval);
   }, [activeTab]);
 

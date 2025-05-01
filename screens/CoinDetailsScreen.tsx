@@ -7,11 +7,12 @@ import {
   Dimensions,
   SafeAreaView,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import axios from 'axios';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import ModalSelector from 'react-native-modal-selector';
-import CustomWagmiChart from '../uiutils/CustomWagmiChart';
+import CustomWagmiChart from '../components/CustomWagmiChart';
 import * as Haptics from 'expo-haptics';
 import { Coin, RootStackParamList, OHLCData } from '../types';
 
@@ -51,7 +52,6 @@ const CoinDetailsScreen: React.FC = () => {
         const ohlcResponse = await axios.get(
           `https://coingeko.burjx.com/coin-ohlc?productId=${selectedCoin?.productId}&days=${timeFrame}`
         );
-
 
         if (!ohlcResponse.data || !Array.isArray(ohlcResponse.data)) {
           console.error('Invalid API response:', ohlcResponse.data);
@@ -114,120 +114,128 @@ const CoinDetailsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {coinData ? (
-          <>
-            <Text style={styles.coinName}>{coinData.name}</Text>
-            <Text style={styles.coinPrice}>
-              {currencyType.toUpperCase()} {coinData.currentPrice.toFixed(2)}
-            </Text>
-            <View style={styles.chartControls}>
-              <TouchableOpacity style={styles.toggleButton} onPress={toggleChartType}>
-                <View
-                  style={[
-                    styles.toggleOption,
-                    chartType === 'line' && styles.activeToggleOption,
-                  ]}
-                >
-                  <Text
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          {coinData ? (
+            <>
+              <Text style={styles.coinName}>{coinData.name}</Text>
+              <Text style={styles.coinPrice}>
+                {currencyType.toUpperCase()} {coinData.currentPrice.toFixed(2)}
+              </Text>
+              <View style={styles.chartControls}>
+                <TouchableOpacity style={styles.toggleButton} onPress={toggleChartType}>
+                  <View
                     style={[
-                      styles.toggleText,
-                      chartType === 'line' && styles.activeToggleText,
+                      styles.toggleOption,
+                      chartType === 'line' && styles.activeToggleOption,
                     ]}
                   >
-                    Line
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.toggleOption,
-                    chartType === 'candlestick' && styles.activeToggleOption,
-                  ]}
-                >
-                  <Text
+                    <Text
+                      style={[
+                        styles.toggleText,
+                        chartType === 'line' && styles.activeToggleText,
+                      ]}
+                    >
+                      Line
+                    </Text>
+                  </View>
+                  <View
                     style={[
-                      styles.toggleText,
-                      chartType === 'candlestick' && styles.activeToggleText,
+                      styles.toggleOption,
+                      chartType === 'candlestick' && styles.activeToggleOption,
                     ]}
                   >
-                    Candle
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <ModalSelector
-                style={{}}
-                selectStyle={styles.timePicker}
-                selectTextStyle={styles.selectText}
-                data={currencyTypeOptions}
-                selectedKey={currencyType}
-                onChange={(currencyOption) => {
-                  if (currencyOption.key) {
-                    console.log('Currency selected:', currencyOption.key);
-                    setCurrencyType(currencyOption.key as 'usd' | 'aed');
-                  }
-                }}
-                onModalClose={() => console.log('Currency modal closed')}
-                initValue="Currency"
-                cancelText="Cancel"
-              />
-              <ModalSelector
-                style={styles.timePickerContainer}
-                selectStyle={styles.timePicker}
-                selectTextStyle={styles.selectText}
-                data={timeFrameOptions}
-                selectedKey={timeFrame}
-                onChange={(option) => {
-                  if (option.key) {
-                    console.log('Time frame selected:', option.key);
-                    setTimeFrame(option.key as '1' | '7' | '30' | '365' | 'max');
-                  }
-                }}
-                onModalClose={() => console.log('Time frame modal closed')}
-                initValue="Time Frame"
-                cancelText="Cancel"
-              />
-            </View>
-            <View style={styles.zoomControls}>
-              <TouchableOpacity style={styles.zoomButton} onPress={zoomIn}>
-                <Text style={styles.zoomButtonText}>+</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.zoomButton} onPress={zoomOut}>
-                <Text style={styles.zoomButtonText}>−</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.chartContainer}>
-              {isLoadingData ? (
-                <ActivityIndicator size="large" color="#007AFF" />
-              ) : ohlcData.length === 0 ? (
-                <Text>No data available for this time frame</Text>
-              ) : (
-                <CustomWagmiChart
-                  currencyType={currencyType}
-                  chartType={chartType}
-                  data={visibleOhlcData}
-                  width={screenWidth - 40}
-                  height={220}
-                  labels={visibleOhlcData.map((d) =>
-                    new Date(d.timestamp).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                  )}
-                  labelRotation="-70deg"
-                  yValues={visibleOhlcData.map((d) => d.close)}
+                    <Text
+                      style={[
+                        styles.toggleText,
+                        chartType === 'candlestick' && styles.activeToggleText,
+                      ]}
+                    >
+                      Candle
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <ModalSelector
+                  style={{}}
+                  selectStyle={styles.timePicker}
+                  selectTextStyle={styles.selectText}
+                  data={currencyTypeOptions}
+                  selectedKey={currencyType}
+                  onChange={(currencyOption) => {
+                    if (currencyOption.key) {
+                      console.log('Currency selected:', currencyOption.key);
+                      setCurrencyType(currencyOption.key as 'usd' | 'aed');
+                    }
+                  }}
+                  onModalClose={() => console.log('Currency modal closed')}
+                  initValue="Currency"
+                  cancelText="Cancel"
                 />
-              )}
-            </View>
-            <View style={styles.coinInfo}>
-              <Text>Market Cap: {currencyType.toUpperCase()} {coinData.marketCap.toLocaleString()}</Text>
-              <Text>24h Volume: {currencyType.toUpperCase()} {(coinData.currentPrice * 1000).toLocaleString()}</Text>
-              <Text>Circulating Supply: {(coinData.currentPrice * 1000000).toLocaleString()}</Text>
-            </View>
-          </>
-        ) : (
-          <ActivityIndicator size="large" color="#007AFF" />
-        )}
-      </View>
+                <ModalSelector
+                  style={styles.timePickerContainer}
+                  selectStyle={styles.timePicker}
+                  selectTextStyle={styles.selectText}
+                  data={timeFrameOptions}
+                  selectedKey={timeFrame}
+                  onChange={(option) => {
+                    if (option.key) {
+                      console.log('Time frame selected:', option.key);
+                      setTimeFrame(option.key as '1' | '7' | '30' | '365' | 'max');
+                    }
+                  }}
+                  onModalClose={() => console.log('Time frame modal closed')}
+                  initValue="Time Frame"
+                  cancelText="Cancel"
+                />
+              </View>
+              <View style={styles.zoomControls}>
+                <TouchableOpacity style={styles.zoomButton} onPress={zoomIn}>
+                  <Text style={styles.zoomButtonText}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.zoomButton} onPress={zoomOut}>
+                  <Text style={styles.zoomButtonText}>−</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.chartContainer}>
+                {isLoadingData ? (
+                  <ActivityIndicator size="large" color="#007AFF" />
+                ) : ohlcData.length === 0 ? (
+                  <Text>No data available for this time frame</Text>
+                ) : (
+                  <CustomWagmiChart
+                    currencyType={currencyType}
+                    chartType={chartType}
+                    data={visibleOhlcData}
+                    width={screenWidth - 40}
+                    height={220}
+                    labels={visibleOhlcData.map((d) =>
+                      new Date(d.timestamp).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                    )}
+                    labelRotation="-70deg"
+                    yValues={visibleOhlcData.map((d) => d.close)}
+                  />
+                )}
+              </View>
+              <View style={styles.coinInfo}>
+                <Text style={styles.coinInfoText}>
+                  Market Cap: {currencyType.toUpperCase()} {coinData.marketCap.toLocaleString()}
+                </Text>
+                <Text style={styles.coinInfoText}>
+                  24h Volume: {currencyType.toUpperCase()} {(coinData.currentPrice * 1000).toLocaleString()}
+                </Text>
+                <Text style={styles.coinInfoText}>
+                  Circulating Supply: {(coinData.currentPrice * 1000000).toLocaleString()}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <ActivityIndicator size="large" color="#007AFF" />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -237,8 +245,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  container: {
+  scrollView: {
     flex: 1,
+  },
+  container: {
     paddingHorizontal: 15,
     paddingVertical: 10,
   },
@@ -323,10 +333,17 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   coinInfo: {
-    marginTop: 20,
     padding: 10,
     backgroundColor: '#f5f5f5',
     borderRadius: 5,
+    marginBottom: 20, // Added to ensure spacing
+  },
+  coinInfoText: {
+    fontSize: 14,
+    marginBottom: 5,
+    textAlign: 'left', // Ensure text aligns properly
+    // Add word break for long numbers
+    flexWrap: 'wrap',
   },
 });
 
