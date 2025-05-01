@@ -24,7 +24,7 @@ const screenWidth = Dimensions.get('window').width;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const MarketOverviewScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'featured' | 'gainers' | 'losers'>('featured');
+  const [activeTab, setActiveTab] = useState<'featured' | 'top Gainers' | 'top Losers'>('featured');
   const [coins, setCoins] = useState<Coin[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,9 +41,9 @@ const MarketOverviewScreen: React.FC = () => {
 
       let data = response.data.data;
 
-      if (activeTab === 'gainers') {
+      if (activeTab === 'top Gainers') {
         data = data.sort((a: Coin, b: Coin) => b.priceChangePercentage24h - a.priceChangePercentage24h);
-      } else if (activeTab === 'losers') {
+      } else if (activeTab === 'top Losers') {
         data = data.sort((a: Coin, b: Coin) => a.priceChangePercentage24h - b.priceChangePercentage24h);
       }
 
@@ -115,14 +115,14 @@ const MarketOverviewScreen: React.FC = () => {
 
   const tabIcons: Record<string, any> = {
     featured: StarIcon,
-    gainers: RocketIcon,
-    losers: TriangularFlagIcon,
+    "top Gainers": RocketIcon,
+    "top Losers": TriangularFlagIcon,
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
-        {['featured', 'gainers', 'losers'].map(tab => (
+        {['featured', 'top Gainers', 'top Losers'].map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -148,7 +148,7 @@ const MarketOverviewScreen: React.FC = () => {
       <FlatList
         data={coins}
         renderItem={renderCoin}
-        keyExtractor={item => item.productId.toString()}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         onEndReached={() => fetchCoins()}
         onEndReachedThreshold={0.5}
         ListFooterComponent={isLoading ? <ActivityIndicator /> : null}
