@@ -1,14 +1,14 @@
 // App.tsx
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MarketOverviewScreen from './screens/MarketOverViewScreen';
 import CoinDetailsScreen from './screens/CoinDetailsScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RootStackParamList } from './types';
 import BiometricGate from './components/BiometricGate';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

@@ -1,4 +1,3 @@
-// CustomWagmiChart.tsx
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
 import { LineChart, CandlestickChart } from 'react-native-wagmi-charts';
@@ -15,6 +14,8 @@ interface CustomWagmiChartProps {
   labelRotation: string;
   yValues?: number[];
   currencyType: 'usd' | 'aed';
+  bullishColor?: string;
+  bearishColor?: string;
 }
 
 const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
@@ -26,11 +27,12 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
   labelRotation,
   yValues,
   currencyType,
+  bullishColor = '#FFFF00',
+  bearishColor = '#FF0000',
 }) => {
   const labelCount = Math.min(labels.length, 6);
   const labelInterval = Math.ceil(labels.length / labelCount);
 
-  // Memoize y-axis calculations
   const { yLabelCount, maxValue, minValue, yStep } = useMemo(() => {
     const count = yValues && yValues.length > 0 ? 5 : 0;
     const max = yValues && yValues.length > 0 ? Math.max(...yValues) : 0;
@@ -39,13 +41,11 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
     return { yLabelCount: count, maxValue: max, minValue: min, yStep: step };
   }, [yValues]);
 
-  // Line chart data format
   const lineData = data.map((d) => ({
     timestamp: d.timestamp,
     value: d.close,
   }));
 
-  // Candlestick chart data format
   const candleData = data.map((d) => ({
     timestamp: d.timestamp,
     open: d.open,
@@ -59,7 +59,6 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
     return `${symbol}${value.toFixed(2)}`;
   };
 
-  // Use consistent chart height
   const chartHeight = Platform.OS === 'ios' ? height : height - 20;
 
   return (
@@ -87,10 +86,13 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
       ) : (
         <CandlestickChart.Provider data={candleData}>
           <CandlestickChart width={width - 120} height={chartHeight}>
-            <CandlestickChart.Candles />
+            <CandlestickChart.Candles
+              positiveColor={bullishColor}
+              negativeColor={bearishColor}
+            />
             <CandlestickChart.Crosshair />
             <CandlestickChart.PriceText
-              style={yValues ? { fontSize: 10 } : styles.priceText}
+              style={[yValues ? { fontSize: 10 } : styles.priceText, { color: '#FFFF00',right: 40  }]} // Bright yellow for crosshair text
               precision={2}
               format={({ value }) => {
                 'worklet';
@@ -99,7 +101,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
               }}
             />
             <CandlestickChart.DatetimeText
-              style={{ fontSize: 10 }}
+              style={{ fontSize: 10, color: '#FFFF00',right: 40 }}
               locale="en-US"
               options={{ month: 'short', day: 'numeric' }}
             />
@@ -136,7 +138,6 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
                   styles.yLabel,
                   {
                     bottom: (index / (yLabelCount - 1)) * (chartHeight - 80) + 20,
-                   // transform: [{ rotate: labelRotation }],
                   },
                 ]}
               >
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   },
   yLabelContainer: {
     position: 'absolute',
-    right: -20, // Y-axis labels on right side
+    right: -20,
     height: '100%',
   },
   yLabel: {
