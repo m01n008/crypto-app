@@ -12,10 +12,11 @@ interface CustomWagmiChartProps {
   height: number;
   labels: string[];
   labelRotation: string;
-  yValues?: number[];
+  yValues: number[];
   currencyType: 'usd' | 'aed';
   bullishColor?: string;
   bearishColor?: string;
+  hideLabels?: boolean; // New prop to hide labels by setting font size to 0
 }
 
 const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
@@ -24,22 +25,14 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
   width,
   height,
   labels,
-  labelRotation,
+  labelRotation = '0deg',
   yValues,
   currencyType,
   bullishColor = '#FFFF00',
   bearishColor = '#FF0000',
+  hideLabels = false,
 }) => {
-  const labelCount = Math.min(labels.length, 6);
-  const labelInterval = Math.ceil(labels.length / labelCount);
-
-  const { yLabelCount, maxValue, minValue, yStep } = useMemo(() => {
-    const count = yValues && yValues.length > 0 ? 5 : 0;
-    const max = yValues && yValues.length > 0 ? Math.max(...yValues) : 0;
-    const min = yValues && yValues.length > 0 ? Math.min(...yValues) : 0;
-    const step = count > 0 && max !== min ? (max - min) / (count - 1) : 0;
-    return { yLabelCount: count, maxValue: max, minValue: min, yStep: step };
-  }, [yValues]);
+  const chartHeight = Platform.OS === 'ios' ? height : height - 20;
 
   const lineData = data.map((d) => ({
     timestamp: d.timestamp,
@@ -59,7 +52,16 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
     return `${symbol}${value.toFixed(2)}`;
   };
 
-  const chartHeight = Platform.OS === 'ios' ? height : height - 20;
+  const { yLabelCount, maxValue, minValue, yStep } = useMemo(() => {
+    const count = yValues && yValues.length > 0 ? 5 : 0;
+    const max = yValues && yValues.length > 0 ? Math.max(...yValues) : 0;
+    const min = yValues && yValues.length > 0 ? Math.min(...yValues) : 0;
+    const step = count > 0 && max !== min ? (max - min) / (count - 1) : 0;
+    return { yLabelCount: count, maxValue: max, minValue: min, yStep: step };
+  }, [yValues]);
+
+  const labelCount = Math.min(labels.length, 6);
+  const labelInterval = Math.ceil(labels.length / labelCount);
 
   return (
     <View style={[styles.chartWrapper, { marginRight: 40, marginLeft: 20 }]}>
@@ -68,7 +70,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
           <LineChart width={width - 120} height={chartHeight}>
             <LineChart.Path color="#007AFF" />
             <LineChart.PriceText
-              style={yValues ? { fontSize: 10 } : styles.priceText}
+              style={[yValues ? { fontSize: 10 } : styles.priceText, hideLabels && { fontSize: 0 }]}
               precision={2}
               format={({ value }) => {
                 'worklet';
@@ -77,7 +79,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
               }}
             />
             <LineChart.DatetimeText
-              style={{ fontSize: 10 }}
+              style={[styles.priceText, hideLabels && { fontSize: 0 }]}
               locale="en-US"
               options={{ month: 'short', day: 'numeric' }}
             />
@@ -92,7 +94,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
             />
             <CandlestickChart.Crosshair />
             <CandlestickChart.PriceText
-              style={[yValues ? { fontSize: 10 } : styles.priceText, { color: '#FFFF00',right: 40  }]} // Bright yellow for crosshair text
+              style={[yValues ? { fontSize: 10 } : styles.priceText, { color: '#FFFF00' }, hideLabels && { fontSize: 0 }]}
               precision={2}
               format={({ value }) => {
                 'worklet';
@@ -101,7 +103,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
               }}
             />
             <CandlestickChart.DatetimeText
-              style={{ fontSize: 10, color: '#FFFF00',right: 40 }}
+              style={[styles.priceText, { color: '#FFFF00' }, hideLabels && { fontSize: 0 }]}
               locale="en-US"
               options={{ month: 'short', day: 'numeric' }}
             />
@@ -120,6 +122,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
                   left: (index / (labels.length - 1)) * (width - 120) + 20,
                   transform: [{ rotate: labelRotation }],
                 },
+                hideLabels && { fontSize: 0 },
               ]}
             >
               {label}
@@ -139,6 +142,7 @@ const CustomWagmiChart: React.FC<CustomWagmiChartProps> = ({
                   {
                     bottom: (index / (yLabelCount - 1)) * (chartHeight - 80) + 20,
                   },
+                  hideLabels && { fontSize: 0 },
                 ]}
               >
                 {formatPrice(value)}
